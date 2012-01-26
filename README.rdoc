@@ -1,0 +1,26 @@
+== Geminabox On Chef
+
+Configures and installs geminabox via Chef to provide private gem store.
+
+== Features/Annoyances
+
+* Optional SSL
+* Optional user/pass authentication
+
+== Requirements
+
+Currently this cookbook uses a defined set of applications with the
+intention to expand coverage of other options (like passenger, thin,
+apache, monit, etc). At present, these are supported:
+
+* Nginx
+* Unicorn
+* Bluepill
+
+=== SSL
+
+TODO: Path example and databag example ( + encrypted data bag)
+
+=== Authentication
+
+TODO: Path example and databag example ( + encrypted data bag)

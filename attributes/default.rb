@@ -2,20 +2,23 @@ node[:geminabox] = Mash.new
 node[:geminabox][:version] = '~> 0.5.1'
 # app configs
 node[:geminabox][:config_directory] = '/etc/geminabox'
-node[:geminabox][:base_directory] = '/var/www'
-node[:geminabox][:data_directory] = 'data'
+node[:geminabox][:base_directory] = '/var/www/geminabox'
+node[:geminabox][:data_directory] = 'data' # This values is joined to base_directory
+node[:geminabox][:build_legacy] = false
 # auth configs
-node[:geminabox][:auth_required] = false
+node[:geminabox][:auth_required] = false # Set to :databag to retreive from databag
 node[:geminabox][:auth_password] = ''
 node[:geminabox][:auth_username] = ''
-node[:geminabox][:auth_databag_secret] = nil
+node[:geminabox][:auth_databag_id] = 'auth' # Override this in cases where multiple geminabox instances may be running
+node[:geminabox][:auth_databag_secret] = nil # Path to secret file on node or string secret
 # sys configs
 node[:geminabox][:www_user] = 'www-data'
 # ssl configs
-node[:geminabox][:ssl] = false
-node[:geminabox][:ssl_key] = ''
-node[:geminabox][:ssl_cert] = ''
-node[:geminabox][:ssl_databag_secret] = nil
+node[:geminabox][:ssl] = false # Set to :databag to retreive from databag
+node[:geminabox][:ssl_key] = '' # Path to key on node
+node[:geminabox][:ssl_cert] = '' # Path to cert on node
+node[:geminabox][:databag_id] = 'ssl' # Override this in cases where multiple geminabox instances may be running
+node[:geminabox][:ssl_databag_secret] = nil # Path to secret file on node or string secret
 # unicorn configs
 node[:geminabox][:unicorn] = Mash.new
 node[:geminabox][:unicorn][:install] = false

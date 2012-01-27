@@ -15,4 +15,6 @@ template File.join(node[:geminabox][:config_directory], 'unicorn.app') do
     :cow_friendly => node[:geminabox][:unicorn][:cow_friendly],
     :www_user => node[:geminabox][:www_user] || 'www-data'
   )
+  mode '0644'
+  notifies :restart, 'service[geminabox]'
 end

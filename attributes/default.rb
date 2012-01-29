@@ -17,7 +17,7 @@ node[:geminabox][:www_user] = 'www-data'
 node[:geminabox][:ssl] = false # Set to :databag to retreive from databag
 node[:geminabox][:ssl_key] = '' # Path to key on node
 node[:geminabox][:ssl_cert] = '' # Path to cert on node
-node[:geminabox][:databag_id] = 'ssl' # Override this in cases where multiple geminabox instances may be running
+node[:geminabox][:ssl_databag_id] = 'ssl' # Override this in cases where multiple geminabox instances may be running
 node[:geminabox][:ssl_databag_secret] = nil # Path to secret file on node or string secret
 # unicorn configs
 node[:geminabox][:unicorn] = Mash.new

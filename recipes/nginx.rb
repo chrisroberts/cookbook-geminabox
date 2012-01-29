@@ -44,29 +44,40 @@ if(node[:geminabox][:auth_required])
     else
       auth_bag = search(:geminabox, 'id:auth')
     end
+    auth_hash = auth_bag['users']
   else
     if(File.exists?(node[:geminabox][:auth_required].to_s))
       geminabox_auth = node[:geminabox][:auth_required]
     elsif(!node[:geminabox][:auth_username].to_s.empty?)
-      package "apache2-utils" do
-        action :install
-        not_if "ls /usr/bin/htpasswd"
-      end
-      execute "htpasswd" do
-        command "htpasswd -c -b #{g_auth_path} #{node[:geminabox][:auth_username]} #{node[:geminabox][:auth_password]}"
-        creates '/etc/nginx/geminabox.htpasswd'
-        action :run
-      end
-      geminabox_auth = g_auth_path
-    else
-      raise 'Failed to determine authentication setup'
+      auth_hash = {node[:geminabox][:auth_username] => node[:geminabox][:auth_password]}
     end
   end
 end
 
+if(auth_hash)
+  package "apache2-utils" do
+    action :install
+    not_if "ls /usr/bin/htpasswd"
+  end
+  auth_hash.each_pair do |username,password|
+    execute "htpasswd" do
+      command "htpasswd -c -b #{g_auth_path} #{username} #{password}"
+      creates '/etc/nginx/geminabox.htpasswd'
+      action :run
+    end
+  end
+  geminabox_auth = g_auth_path
+end
+
 if(auth_bag)
-  template g_auth_path do
-    source 'stub.erb'
+  if(auth_bag['file'])
+    template g_auth_path do
+      source 'stub.erb'
+      variables(
+        :content => auth_bag['file']
+      )
+    end
+  elsif(auth_bag['users'])
   end
 end
 

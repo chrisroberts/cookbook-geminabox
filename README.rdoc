@@ -1,6 +1,7 @@
 == Geminabox On Chef
 
-Configures and installs geminabox via Chef to provide private gem store.
+Configures and installs {geminabox}[http://github.com/cwninja/geminabox] via Chef to provide
+a private (and optionally secured) gem store.
 
 == Features
 

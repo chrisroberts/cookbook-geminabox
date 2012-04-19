@@ -1,104 +1,61 @@
 include_recipe 'nginx'
 
-if(node[:geminabox][:ssl])
-  if(node[:geminabox][:ssl] == 'databag')
-    if(node[:geminabox][:ssl_databag_secret])
-      if(File.exists?(node[:geminabox][:ssl_databag_secret]))
-        g_secret = Chef::EncryptedDataBagItem.load_secret(node[:geminabox][:ssl_databag_secret])
-      else
-        g_secret = node[:geminabox][:ssl_databag_secret]
-      end
-      g_bag = Chef::EncryptedDataBagItem.load('geminabox', 'ssl', g_secret)
-    else
-      g_bag = search(:geminabox, 'id:ssl')
+if(node[:geminabox][:ssl].respond_to?(:[]))
+  geminabox_key = node[:geminabox][:ssl][:key]
+  geminabox_cert = node[:geminabox][:ssl][:cert]
+end
+
+{:key => geminabox_key, :cert => geminabox_cert}.each_pair do |key,val|
+  unless(File.exists?(val))
+    file File.join(node[:nginx][:dir], "geminabox.ssl.#{key}") do
+      content val
     end
-  else
-    geminabox_key = node[:geminabox][:ssl_key]
-    geminabox_cert = node[:geminabox][:ssl_cert]
+    val.replace(File.join(node[:nginx][:dir], "geminabox.ssl.#{key}"))
   end
 end
 
-if(g_bag)
-  %w(key cert).each do |key|
-    template File.join('/', 'etc', 'nginx', "geminabox.ssl.#{key}") do
-      source 'stub.erb'
-      variables(
-        :content => g_bag[key]
-      )
-    end
-  end
-  geminabox_key = File.join('/', 'etc', 'nginx', 'geminabox.ssl.key')
-  geminabox_cert = File.join('/', 'etc', 'nginx', 'geminabox.ssl.cert')
-end
-
-g_auth_path = File.join('/', 'etc', 'nginx', 'geminabox.htpasswd')
 if(node[:geminabox][:auth_required])
-  if(node[:geminabox][:auth_required] == 'databag')
-    if(node[:geminabox][:auth_databag_secret])
-      if(File.exists?(node[:geminabox][:auth_databag_secret]))
-        g_secret = Chef::EncryptedDataBagItem.load_secret(node[:geminabox][:auth_databag_secret])
-      else
-        g_secret = node[:geminabox][:auth_databag_secret]
-      end
-      auth_bag = Chef::EncryptedDataBagItem.load('geminabox', 'auth', g_secret)
+  if(node[:geminabox][:auth_required].is_a?(String))
+    if(File.exists?(node[:geminabox][:auth_required]))
+      htpasswd_file = node[:geminabox][:auth_required]
     else
-      auth_bag = search(:geminabox, 'id:auth')
+      file File.join(node[:nginx][:dir], 'geminabox.htpasswd') do
+        content node[:geminabox][:auth_required]
+      end
+      geminabox_auth = File.join(node[:nginx][:dir], 'geminabox.htpasswd')
     end
-    auth_hash = auth_bag['users']
+  elsif(node[:geminabox][:auth_required].is_a?(Hash)) # generate file
+    require 'webrick/httpauth'
+    require 'tempfile'
+    tmp = Tempfile.new('geminabox')
+    begin
+      htpasswd = WEBrick::HTTPAuth::Htpasswd.new(tmp.path)
+      node[:geminabox][:auth_required].each do |user, pass|
+        htpasswd.set_passwd 'geminabox', user, pass
+      end
+      htpasswd.flush
+      htpasswd_contents = File.read(tmp.path)
+      file File.join(node[:nginx][:dir], 'geminabox.htpasswd') do
+        content htpasswd_contents
+      end
+      geminabox_auth = File.join(node[:nginx][:dir], 'geminabox.htpasswd')
+    ensure
+      tmp.close
+      tmp.unlink
+    end
   else
-    if(File.exists?(node[:geminabox][:auth_required].to_s))
-      geminabox_auth = node[:geminabox][:auth_required]
-    elsif(!node[:geminabox][:auth_username].to_s.empty?)
-      auth_hash = {node[:geminabox][:auth_username] => node[:geminabox][:auth_password]}
-    end
+    raise "Unknown authentication setting provided for geminabox configuration"
   end
 end
-
-if(auth_hash)
-  package "apache2-utils" do
-    action :install
-    not_if "ls /usr/bin/htpasswd"
-  end
-  auth_hash.each_pair do |username,password|
-    execute "htpasswd" do
-      command "htpasswd -c -b #{g_auth_path} #{username} #{password}"
-      creates '/etc/nginx/geminabox.htpasswd'
-      action :run
-    end
-  end
-  geminabox_auth = g_auth_path
-end
-
-if(auth_bag)
-  if(auth_bag['file'])
-    template g_auth_path do
-      source 'stub.erb'
-      variables(
-        :content => auth_bag['file']
-      )
-    end
-  elsif(auth_bag['users'])
-  end
-end
-
-if(node[:geminabox][:ssl] && (geminabox_cert.to_s.empty? || geminabox_key.to_s.empty?))
-  Chef::Log.warn "SSL has been required but key/cert cannot be found"
-end
-if(node[:geminabox][:auth_required] && geminabox_auth.to_s.empty?)
-  Chef::Log.warn "AUTH has been required but auth file cannot be found"
-end
-
-Chef::Log.info "CERT: #{geminabox_cert.inspect} - KEY: #{geminabox_key.inspect}"
 
 template File.join('/', 'etc', 'nginx', 'sites-available', 'geminabox') do
   source 'nginx-geminabox.erb'
   variables(
     :socket => File.join(node[:geminabox][:base_directory], 'unicorn.socket'),
-    :ssl => node[:geminabox][:ssl] && !geminabox_cert.to_s.empty? && !geminabox_key.to_s.empty?,
     :root => node[:geminabox][:base_directory],
+    :ssl => geminabox_cert && geminabox_key,
     :ssl_cert => geminabox_cert,
     :ssl_key => geminabox_key,
-    :auth => node[:geminabox][:auth_required] && !geminabox_auth.to_s.empty?,
     :auth_file => geminabox_auth
   )
   mode '0644'

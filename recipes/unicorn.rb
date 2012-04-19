@@ -5,16 +5,15 @@ if(node[:geminabox][:unicorn][:install])
   end
 end
 
-template File.join(node[:geminabox][:config_directory], 'unicorn.app') do
-  source 'unicorn.app.erb'
-  variables(
-    :base_path => node[:geminabox][:base_directory],
-    :workers => node[:geminabox][:unicorn][:workers] || 2,
-    :socket => File.join(node[:geminabox][:base_directory], 'unicorn.socket'),
-    :timeout => node[:geminabox][:unicorn][:timeout] || 30,
-    :cow_friendly => node[:geminabox][:unicorn][:cow_friendly],
-    :www_user => node[:geminabox][:www_user] || 'www-data'
-  )
+unicorn_config File.join(node[:geminabox][:config_directory], 'geminabox.unicorn.app') do
+  listen File.join(node[:geminabox][:unicorn][:base_directory], 'unicorn.socket')
+  worker_processes node[:geminabox][:unicorn][:workers] || 2
+  worker_timeout node[:geminabox][:unicorn][:timeout] || 30
+  working_directory node[:geminabox][:base_directory]
+  preload_app true
+  owner node[:geminabox][:www_user] || 'www-data'
+  group node[:geminabox][:www_user] || 'www-data'
   mode '0644'
-  notifies :restart, 'service[geminabox]'
+  notifies 'service[geminabox]'
 end
+

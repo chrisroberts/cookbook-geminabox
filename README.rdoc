@@ -18,6 +18,13 @@ apache, monit, etc). At present, these are supported:
 * Unicorn
 * Bluepill
 
+== Suggested additions
+
+It is highly suggested to include the BagConfig cookbook for storing sensitive
+configuration values within encrypted data bag entries:
+
+http://community.opscode.com/cookbooks/bag_config
+
 == What you get
 
 By default, this cookbook will provide a Geminabox instance available
@@ -28,108 +35,32 @@ monitoring the unicorn processes. It also comes with an upstart configuration.
 
 === SSL
 
-To enable SSL, first turn it on:
+To enable SSL, provide a key and cert pair:
 
-  override_attributes :geminabox => {:ssl => true}
+  node[:geminabox][:ssl] = {:key => '/path/to/ssl.key', :cert => '/path/to/ssl.cert'}
 
-SSL support will require a key and cert. There are two ways of providing them.
-
-==== Path based SSL
-
-If the node already has an SSL key/cert pair installed, provide the path to
-those files:
-
-  override_attributes :geminabox => {:ssl_key => '/path/to/ssl.key', :ssl_cert => '/path/to/ssl.cert'}
-
-==== Data bag based SSL
-
-The SSL key/cert pair can also be enabled via a data bag. By default, the data bag is
-geminabox -> ssl, but the id can be modified. To enable data bag usage, we modify
-how we enable SSL:
-
-  override_attributes :geminabox => {:ssl => :databag}
-
-If the ID of the data bag is something other than 'ssl', you can modify:
-
-  override_attributes :geminabox => {:ssl_databag_id => 'node1_ssl'}
-
-This is generally only useful if you have multiple nodes that require different
-SSL key/cert pairs.
-
-==== Encrypted data bags
-
-For encrypted data bags, the secret must be supplied. The value can be either
-the secret string, or a path to the secret file on the node:
-
-  override_attributes :geminabox => {:ssl_databag_secret => 'my voice is my password'}
-  # OR
-  override_attributes :geminabox => {:ssl_databag_secret => '/path/to/secret.file'}
-
-==== Data bag format
-
-  {
-    id : 'ssl',
-    key : 'ssl key here',
-    cert: 'ssl cert here'
-  }
+You can also provide the the actual key and cert pair in the attributes (though
+if this approach is used, it is advised to use the BagConfig cookbook and encrypt
+the data bag entry).
 
 === Authentication
 
-To enable authentication, first turn it on:
+To enable authentication, provide a path to the htpasswd file to use or the raw
+contents of the htpasswd file:
 
-  override_attributes :geminabox => {:auth_required => true}
+  node[:geminabox][:auth_required] = '/path/to/htpasswd.file'
 
-Authentication requires password file created by htpasswd. There are two ways
-of providing it.
+or, you can provide a hash of user/password pairs and have the auth file dynamically
+created:
 
-==== Path based auth
+  node[:geminabox][:auth_required] = {'user1', 'secret'}
 
-If the node already has the password file to use for authentication, provide the path:
-
-  override_attributes :geminabox => {:auth_required => '/path/to/auth.file'}
-
-==== Defined user/password
-
-For a very simple setup, you can provide a username and password and allow the 
-password file to be automatically created:
-
-  override_attributes :geminabox => {:auth_username => 'test', :auth_password => 'test'}
-
-==== Data bag
+Again, with providing plaintext passwords, it is suggested to use the BagConfig cookbook
+and encrypt the configuration data bag entry.
 
 Finally, the password file can be provided via data bag.  There are two ways the data bag can
 be formatted. First is providing the content of an htpasswd generated file. The second is to
 provide username/password pairs in the data bag.
-
-Format of the data bag for providing the file contents:
-
-  {
-    file : 'contents of file'
-  }
-
-Format of data bag for username/password pairs:
-
-  {
-    users : {
-      username1 : 'password1'
-      username2 : 'password2'
-    }
-  }
-
-==== Encrypted data bags
-
-Just as with the SSL data bag, the auth data bag can be encrypted as well. Simply provide
-the secret or path to the secret file
-
-  override_attributes :geminabox => {:auth_databag_secret => 'my_secret'}
-  # OR
-  override_attributes :geminabox => {:auth_databag_secret => '/path/to/secret.file'}
-
-==== Data bag naming
-
-The name of the data bag can also be overriden:
-
-  override_attributes :geminabox => {:auth_databag_id => 'host1_auth'}
 
 == Issues
 

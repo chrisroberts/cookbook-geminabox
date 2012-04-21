@@ -1,5 +1,5 @@
 default[:geminabox] = Mash.new
-default[:geminabox][:version] = '~> 0.5.1'
+default[:geminabox][:version] = '~> 0.6.0'
 # app configs
 default[:geminabox][:config_directory] = '/etc/geminabox'
 default[:geminabox][:base_directory] = '/var/www/geminabox'
@@ -22,7 +22,7 @@ default[:geminabox][:unicorn][:process_user] = default[:geminabox][:www_user]
 default[:geminabox][:unicorn][:process_group] = default[:geminabox][:www_user]
 default[:geminabox][:unicorn][:maxmemory] = 50
 default[:geminabox][:unicorn][:maxcpu] = 20
-default[:geminabox][:unicorn][:exec] = '/usr/local/bin/unicorn'
+default[:geminabox][:unicorn][:exec] = '/usr/bin/unicorn'
 # nginx configs
 default[:geminabox][:nginx] = Mash.new
 # bluepill configs

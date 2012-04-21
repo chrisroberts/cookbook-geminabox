@@ -10,6 +10,7 @@ directory File.join(node[:geminabox][:base_directory], node[:geminabox][:data_di
   recursive true
   mode '0755'
   owner node[:geminabox][:www_user]
+  group node[:geminabox][:www_group]
 end
 
 # Setup the frontend
@@ -20,7 +21,7 @@ end
 # Install the gem
 gem_package('geminabox') do
   action :install
-  version node[:geminabox][:version] || '~> 0.5.1'
+  version node[:geminabox][:version] || '~> 0.6.0'
 end
 
 # Load up the monitoring

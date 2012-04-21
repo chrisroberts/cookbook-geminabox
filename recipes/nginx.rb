@@ -1,16 +1,24 @@
 include_recipe 'nginx'
 
+%w(000-default default).each do |site|
+  nginx_site site do
+    enable false
+  end
+end
+
 if(node[:geminabox][:ssl].respond_to?(:[]))
   geminabox_key = node[:geminabox][:ssl][:key]
   geminabox_cert = node[:geminabox][:ssl][:cert]
 end
 
-{:key => geminabox_key, :cert => geminabox_cert}.each_pair do |key,val|
-  unless(File.exists?(val))
-    file File.join(node[:nginx][:dir], "geminabox.ssl.#{key}") do
-      content val
+if(geminabox_key && geminabox_cert)
+  {:key => geminabox_key, :cert => geminabox_cert}.each_pair do |key,val|
+    unless(File.exists?(val))
+      file File.join(node[:nginx][:dir], "geminabox.ssl.#{key}") do
+        content val
+      end
+      val.replace(File.join(node[:nginx][:dir], "geminabox.ssl.#{key}"))
     end
-    val.replace(File.join(node[:nginx][:dir], "geminabox.ssl.#{key}"))
   end
 end
 

@@ -10,7 +10,7 @@ default[:geminabox][:auth_required] = false
 # sys configs
 default[:geminabox][:www_user] = 'www-data'
 # ssl configs
-default[:geminabox][:ssl] = false 
+default[:geminabox][:ssl][:enabled] = false
 # unicorn configs
 default[:geminabox][:unicorn] = Mash.new
 default[:geminabox][:unicorn][:install] = false

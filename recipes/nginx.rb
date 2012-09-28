@@ -6,7 +6,7 @@ include_recipe 'nginx'
   end
 end
 
-if(node[:geminabox][:ssl].respond_to?(:[]))
+if(node[:geminabox][:ssl][:enabled])
   geminabox_key = node[:geminabox][:ssl][:key]
   geminabox_cert = node[:geminabox][:ssl][:cert]
 end

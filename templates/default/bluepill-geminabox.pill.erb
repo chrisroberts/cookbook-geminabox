@@ -3,8 +3,8 @@ Bluepill.application("geminabox") do |app|
     process.pid_file = '<%= @pid %>'
     process.working_dir = '<%= @working_directory %>'
     process.start_command = 'red_unicorn -x <%= @exec %> -c <%= @config %> -p <%= @pid %> start'
-    process.start_command = 'red_unicorn -x <%= @exec %> -c <%= @config %> -p <%= @pid %> stop'
-    process.start_command = 'red_unicorn -x <%= @exec %> -c <%= @config %> -p <%= @pid %> restart'
+    process.stop_command = 'red_unicorn -x <%= @exec %> -c <%= @config %> -p <%= @pid %> stop'
+    process.restart_command = 'red_unicorn -x <%= @exec %> -c <%= @config %> -p <%= @pid %> restart'
     process.uid = '<%= @process_user %>'
     process.gid = '<%= @process_group %>'
     process.start_grace_time 30.seconds

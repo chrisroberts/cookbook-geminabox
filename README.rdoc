@@ -37,7 +37,7 @@ monitoring the unicorn processes. It also comes with an upstart configuration.
 
 To enable SSL, provide a key and cert pair:
 
-  node[:geminabox][:ssl] = {:key => '/path/to/ssl.key', :cert => '/path/to/ssl.cert'}
+  node[:geminabox][:ssl] = {:key => '/path/to/ssl.key', :cert => '/path/to/ssl.cert', :enabled => true}
 
 You can also provide the the actual key and cert pair in the attributes (though
 if this approach is used, it is advised to use the BagConfig cookbook and encrypt

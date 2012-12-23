@@ -36,6 +36,8 @@ server {
   <% end %>
   proxy_set_header Host $http_host;
   location / {
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forwarded-Proto https;
     proxy_pass http://unicorn;
   }
 }

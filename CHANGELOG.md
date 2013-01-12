@@ -1,3 +1,6 @@
+## v0.1.2
+* HTTPS fixes: https://github.com/chrisroberts/cookbook-geminabox/pull/4
+
 ## v0.1.1
 * Fix bluepill commands (thanks [Andrew Wason](https://github.com/rectalogic))
 * Disambiguate ssl enabled flag (thanks https://github.com/jblatt-verticloud)

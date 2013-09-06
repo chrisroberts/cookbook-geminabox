@@ -1,3 +1,5 @@
+include_recipe 'build-essential'
+
 # Ensure our directories exist
 directory node[:geminabox][:config_directory] do
   action :create
@@ -21,7 +23,7 @@ end
 # Install the gem
 gem_package('geminabox') do
   action :install
-  version node[:geminabox][:version] || '~> 0.6.0'
+  version node[:geminabox][:version] if node[:geminabox][:version]
 end
 
 # Load up the monitoring

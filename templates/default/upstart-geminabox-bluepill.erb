@@ -7,7 +7,7 @@ expect daemon
 respawn
 respawn limit 5 30
 
-env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/chef/embedded/bin
 
 pre-start script
   mkdir -p <%= @base_directory %>

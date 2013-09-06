@@ -1,5 +1,5 @@
 default[:geminabox] = Mash.new
-default[:geminabox][:version] = '~> 0.6.0'
+default[:geminabox][:version] = '~> 0.6'
 # app configs
 default[:geminabox][:config_directory] = '/etc/geminabox'
 default[:geminabox][:base_directory] = '/var/www/geminabox'
@@ -11,6 +11,7 @@ default[:geminabox][:auth_required] = false
 default[:geminabox][:www_user] = 'www-data'
 # ssl configs
 default[:geminabox][:ssl][:enabled] = false
+default[:geminabox][:ssl][:snakeoil] = true
 # unicorn configs
 default[:geminabox][:unicorn] = Mash.new
 default[:geminabox][:unicorn][:install] = false

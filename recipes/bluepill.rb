@@ -23,7 +23,8 @@ template '/etc/bluepill/geminabox.pill' do
     :process_user => node[:geminabox][:unicorn][:process_user],
     :process_group => node[:geminabox][:unicorn][:process_group],
     :maxmemory => node[:geminabox][:unicorn][:maxmemory],
-    :maxcpu => node[:geminabox][:unicorn][:maxcpu]
+    :maxcpu => node[:geminabox][:unicorn][:maxcpu],
+    :bin_dir => node[:languages][:ruby][:bin_dir]
   )
   notifies :restart, 'service[geminabox]'
 end

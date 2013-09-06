@@ -7,18 +7,29 @@ include_recipe 'nginx'
 end
 
 if(node[:geminabox][:ssl][:enabled])
-  geminabox_key = node[:geminabox][:ssl][:key]
-  geminabox_cert = node[:geminabox][:ssl][:cert]
+  if(node[:geminabox][:ssl][:key].nil? && node[:geminabox][:ssl][:snakeoil])
+
+    package 'ssl-cert'
+
+    group 'ssl-cert' do
+      action :modify
+      members node[:geminabox][:www_user]
+      append true
+    end
+    node.set[:geminabox][:ssl][:key_file] = '/etc/ssl/private/ssl-cert-snakeoil.key'
+    node.set[:geminabox][:ssl][:cert_file] = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+  else
+    geminabox_key = node[:geminabox][:ssl][:key]
+    geminabox_cert = node[:geminabox][:ssl][:cert]
+  end
 end
 
 if(geminabox_key && geminabox_cert)
   {:key => geminabox_key, :cert => geminabox_cert}.each_pair do |key,val|
-    unless(File.exists?(val))
-      file File.join(node[:nginx][:dir], "geminabox.ssl.#{key}") do
-        content val
-      end
-      val.replace(File.join(node[:nginx][:dir], "geminabox.ssl.#{key}"))
+    file File.join(node[:nginx][:dir], "geminabox.ssl.#{key}") do
+      content val
     end
+    node.set[:geminabox][:ssl]["#{key}_file"] = File.join(node[:nginx][:dir], "geminabox.ssl.#{key}")
   end
 end
 
@@ -61,9 +72,9 @@ template File.join('/', 'etc', 'nginx', 'sites-available', 'geminabox') do
   variables(
     :socket => File.join(node[:geminabox][:base_directory], 'unicorn.socket'),
     :root => node[:geminabox][:base_directory],
-    :ssl => geminabox_cert && geminabox_key,
-    :ssl_cert => geminabox_cert,
-    :ssl_key => geminabox_key,
+    :ssl => node[:geminabox][:ssl][:enabled],
+    :ssl_cert => node[:geminabox][:ssl][:cert_file],
+    :ssl_key => node[:geminabox][:ssl][:key_file],
     :auth_file => geminabox_auth
   )
   mode '0644'

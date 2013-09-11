@@ -25,6 +25,8 @@ default[:geminabox][:unicorn][:maxmemory] = 50
 default[:geminabox][:unicorn][:maxcpu] = 20
 default[:geminabox][:unicorn][:exec] = '/usr/bin/unicorn'
 # nginx configs
-default[:geminabox][:nginx] = Mash.new
+default[:geminabox][:nginx][:bind] = node.ipaddress
+default[:geminabox][:nginx][:port] = 80
+default[:geminabox][:nginx][:ssl_port] = 443
 # bluepill configs
 default[:geminabox][:bluepill] = Mash.new

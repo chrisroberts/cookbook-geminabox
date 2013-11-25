@@ -53,7 +53,7 @@ contents of the htpasswd file:
 or, you can provide a hash of user/password pairs and have the auth file dynamically
 created:
 
-  node[:geminabox][:auth_required] = {'user1', 'secret'}
+  node[:geminabox][:auth_required] = {'user1' => 'secret'}
 
 Again, with providing plaintext passwords, it is suggested to use the BagConfig cookbook
 and encrypt the configuration data bag entry.

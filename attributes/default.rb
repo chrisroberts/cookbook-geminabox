@@ -9,6 +9,8 @@ default[:geminabox][:config_directory] = '/etc/geminabox'
 default[:geminabox][:base_directory] = '/var/www/geminabox'
 default[:geminabox][:data_directory] = 'data' # This values is joined to base_directory
 default[:geminabox][:build_legacy] = false
+# Proxy missing gems from rubygems
+default[:geminabox][:rubygems_proxy] = false
 # auth configs
 default[:geminabox][:auth_required] = false
 # sys configs

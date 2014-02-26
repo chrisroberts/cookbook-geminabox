@@ -52,7 +52,8 @@ template File.join(node[:geminabox][:base_directory], 'config.ru') do
   source 'config.ru.erb'
   variables(
     :geminabox_data_directory => File.join(node[:geminabox][:base_directory], node[:geminabox][:data_directory]),
-    :geminabox_build_legacy => node[:geminabox][:build_legacy]
+    :geminabox_build_legacy => node[:geminabox][:build_legacy],
+    :geminabox_rubygems_proxy => node[:geminabox][:rubygems_proxy]
   )
   mode '0644'
   notifies :restart, 'service[geminabox]'

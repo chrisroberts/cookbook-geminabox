@@ -24,14 +24,14 @@ gem_package('geminabox') do
   version node[:geminabox][:version] || '~> 0.6.0'
 end
 
-# Load up the monitoring
-if(node[:geminabox][:bluepill] || :this_is_all_we_support)
-  include_recipe 'geminabox::bluepill'
-end
-
 # Configure up server instance
 if(node[:geminabox][:unicorn] || :this_is_all_we_support)
   include_recipe 'geminabox::unicorn'
+end
+
+# Load up the monitoring
+if(node[:geminabox][:bluepill] || :this_is_all_we_support)
+  include_recipe 'geminabox::bluepill'
 end
 
 template File.join(node[:geminabox][:base_directory], 'config.ru') do

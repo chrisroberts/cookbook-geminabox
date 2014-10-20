@@ -15,27 +15,39 @@ directory File.join(node[:geminabox][:base_directory], node[:geminabox][:data_di
   group node[:geminabox][:www_group]
 end
 
-# Setup the frontend
-if(node[:geminabox][:nginx] || :this_is_all_we_support_now)
-  include_recipe 'geminabox::nginx'
-end
-
 # Install the gem
 gem_package('geminabox') do
   action :install
   version node[:geminabox][:version] if node[:geminabox][:version]
 end
 
-# Load up the monitoring
-if(node[:geminabox][:bluepill] || :this_is_all_we_support)
-  include_recipe 'geminabox::bluepill'
+# Setup the frontend
+case node[:geminabox][:frontend].to_sym
+when :nginx
+  include_recipe 'geminabox::nginx'
+else
+  raise ArgumentError.new "Unknown frontend style provided: #{node[:geminabox][:frontend]}"
 end
 
-# Configure up server instance
-if(node[:geminabox][:unicorn] || :this_is_all_we_support)
+# Setup the backend
+case node[:geminabox][:backend].to_sym
+when :unicorn
   include_recipe 'geminabox::unicorn'
+else
+  raise ArgumentError.new "Unknown backend style provided: #{node[:geminabox][:backend]}"
 end
 
+# Setup the init
+case node[:geminabox][:init].to_sym
+when :bluepill
+  include_recipe 'geminabox::bluepill'
+when :runit
+  include_recipe 'geminabox::runit'
+else
+  raise ArgumentError.new "Unknown init style provided: #{node[:geminabox][:init]}"
+end
+
+# Configure geminabox
 template File.join(node[:geminabox][:base_directory], 'config.ru') do
   source 'config.ru.erb'
   variables(

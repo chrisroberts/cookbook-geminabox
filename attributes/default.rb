@@ -1,5 +1,9 @@
 default[:geminabox] = Mash.new
 default[:geminabox][:version] = '~> 0.6'
+# setup configs
+default[:geminabox][:frontend] = 'nginx'
+default[:geminabox][:backend] = 'unicorn'
+default[:geminabox][:init] = 'bluepill'
 # app configs
 default[:geminabox][:config_directory] = '/etc/geminabox'
 default[:geminabox][:base_directory] = '/var/www/geminabox'

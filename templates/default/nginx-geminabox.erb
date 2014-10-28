@@ -18,6 +18,7 @@ server {
   auth_basic "Restricted Access";
   auth_basic_user_file <%= @auth_file %>;
   <% end %>
+  client_max_body_size <%= node[:geminabox][:nginx][:client_max_body_size] %>;
 }
 
 <% if @ssl %>

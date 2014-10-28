@@ -28,5 +28,6 @@ default[:geminabox][:unicorn][:exec] = '/usr/bin/unicorn'
 default[:geminabox][:nginx][:bind] = node.ipaddress
 default[:geminabox][:nginx][:port] = 80
 default[:geminabox][:nginx][:ssl_port] = 443
+default[:geminabox][:nginx][:client_max_body_size] = '5M'
 # bluepill configs
 default[:geminabox][:bluepill] = Mash.new

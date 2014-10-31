@@ -12,10 +12,16 @@ default[:geminabox][:build_legacy] = false
 # auth configs
 default[:geminabox][:auth_required] = false
 # sys configs
-default[:geminabox][:www_user] = 'www-data'
+case node[:platform_family]
+when 'debian'
+  default[:geminabox][:www_user] = 'www-data'
+when 'rhel', 'fedora'
+  default[:geminabox][:www_user] = 'nginx'
+else
+  default[:geminabox][:www_user] = 'www-data'
+end
 # ssl configs
 default[:geminabox][:ssl][:enabled] = false
-default[:geminabox][:ssl][:snakeoil] = true
 # unicorn configs
 default[:geminabox][:unicorn] = Mash.new
 default[:geminabox][:unicorn][:install] = false

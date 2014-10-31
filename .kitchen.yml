@@ -11,10 +11,8 @@ platforms:
 
 suites:
   - name: default
-    run_list: ['recipe[geminabox]']
+    run_list: ['recipe[apt]', 'recipe[geminabox]']
     attributes:
       geminabox:
-        www_user: 'nginx'
         ssl:
           enabled: true
-          snakeoil: false

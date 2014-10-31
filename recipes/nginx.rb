@@ -7,35 +7,12 @@ include_recipe 'nginx'
 end
 
 if(node[:geminabox][:ssl][:enabled])
-  if(node[:geminabox][:ssl][:key].nil? && node[:geminabox][:ssl][:snakeoil])
-
-    package 'ssl-cert'
-
-    group 'ssl-cert' do
-      action :modify
-      members node[:geminabox][:www_user]
-      append true
-    end
-    node.set[:geminabox][:ssl][:key_file] = '/etc/ssl/private/ssl-cert-snakeoil.key'
-    node.set[:geminabox][:ssl][:cert_file] = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
-  else
-    geminabox_key = node[:geminabox][:ssl][:key]
-    geminabox_cert = node[:geminabox][:ssl][:cert]
+  cert = ssl_certificate "geminabox" do
+    namespace "geminabox"
+    notifies :restart, "service[nginx]"
   end
 
-  if node.platform_family?("rhel")
-    cert = ssl_certificate "geminabox" do
-      namespace "geminabox"
-      notifies :restart, "service[nginx]"
-    end
-    geminabox_key = cert.key_content
-    geminabox_cert = cert.cert_content
-  end
-
-end
-
-if(geminabox_key && geminabox_cert)
-  {:key => geminabox_key, :cert => geminabox_cert}.each_pair do |key,val|
+  {:key => cert.key_content, :cert => cert.cert_content}.each_pair do |key,val|
     file File.join(node[:nginx][:dir], "geminabox.ssl.#{key}") do
       content val
     end

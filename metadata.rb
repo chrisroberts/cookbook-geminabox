@@ -11,5 +11,6 @@ depends 'unicorn'
 depends 'rc_mon'
 depends 'nginx'
 depends 'build-essential'
+depends 'ssl_certificate'
 
 suggests 'bag_config', '>= 2.0.0'

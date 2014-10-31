@@ -22,6 +22,16 @@ if(node[:geminabox][:ssl][:enabled])
     geminabox_key = node[:geminabox][:ssl][:key]
     geminabox_cert = node[:geminabox][:ssl][:cert]
   end
+
+  if node.platform_family?("rhel")
+    cert = ssl_certificate "geminabox" do
+      namespace "geminabox"
+      notifies :restart, "service[nginx]"
+    end
+    geminabox_key = cert.key_content
+    geminabox_cert = cert.cert_content
+  end
+
 end
 
 if(geminabox_key && geminabox_cert)

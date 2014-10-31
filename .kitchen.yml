@@ -16,3 +16,7 @@ suites:
       geminabox:
         ssl:
           enabled: true
+        unicorn:
+          exec: "/opt/chef/embedded/bin/unicorn"
+        nginx:
+          bind: "*"

@@ -7,12 +7,19 @@ include_recipe 'nginx'
 end
 
 if(node[:geminabox][:ssl][:enabled])
-  cert = ssl_certificate "geminabox" do
-    namespace "geminabox"
-    notifies :restart, "service[nginx]"
+  if(node[:geminabox][:ssl][:key].nil?)
+    cert = ssl_certificate "geminabox" do
+      namespace "geminabox"
+      notifies :restart, "service[nginx]"
+    end
+    geminabox_key = cert.key_content
+    geminabox_cert = cert.cert_content
+  else
+    geminabox_key = node[:geminabox][:ssl][:key]
+    geminabox_cert = node[:geminabox][:ssl][:cert]
   end
 
-  {:key => cert.key_content, :cert => cert.cert_content}.each_pair do |key,val|
+  {:key => geminabox_key, :cert => geminabox_cert}.each_pair do |key,val|
     file File.join(node[:nginx][:dir], "geminabox.ssl.#{key}") do
       content val
     end

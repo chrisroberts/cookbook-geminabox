@@ -12,10 +12,7 @@ default[:geminabox][:build_legacy] = false
 # auth configs
 default[:geminabox][:auth_required] = false
 # sys configs
-case node[:platform_family]
-when 'debian'
-  default[:geminabox][:www_user] = 'www-data'
-when 'rhel', 'fedora'
+if ['rhel', 'fedora'].include? node[:platform_family]
   default[:geminabox][:www_user] = 'nginx'
 else
   default[:geminabox][:www_user] = 'www-data'

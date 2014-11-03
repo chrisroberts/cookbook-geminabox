@@ -1,5 +1,5 @@
 default[:geminabox] = Mash.new
-default[:geminabox][:version] = '~> 0.6'
+default[:geminabox][:version] = nil
 # setup configs
 default[:geminabox][:frontend] = 'nginx'
 default[:geminabox][:backend] = 'unicorn'

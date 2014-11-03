@@ -35,6 +35,7 @@ server {
   auth_basic "Restricted Access";
   auth_basic_user_file <%= @auth_file %>;
   <% end %>
+  client_max_body_size <%= node[:geminabox][:nginx][:client_max_body_size] %>;
   location / {
     proxy_set_header Host $http_host;
     proxy_set_header X-Forwarded-Proto https;

@@ -1,3 +1,7 @@
+## v0.2.0
+* SSL support updates
+* Remove default version restriction
+
 ## v0.1.2
 * HTTPS fixes: https://github.com/chrisroberts/cookbook-geminabox/pull/4
 

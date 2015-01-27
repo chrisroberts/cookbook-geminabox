@@ -1,13 +1,28 @@
 default[:geminabox] = Mash.new
 default[:geminabox][:version] = nil
+default[:geminabox][:ruby][:version] = '2.1.5'
+
 # setup configs
 default[:geminabox][:frontend] = 'nginx'
 default[:geminabox][:backend] = 'unicorn'
-default[:geminabox][:init] = 'bluepill'
+default[:geminabox][:monitor] = 'bluepill'
+default[:geminabox][:init_type] = value_for_platform(
+  %w(amazon centos debian oracle redhat) => {
+    'default' => 'sysv'
+  },
+  %w(fedora) => {
+    'default' => 'systemd'
+  },
+  %w(ubuntu) => {
+    'default' => 'upstart'
+  },
+  'default' => 'upstart'
+)
 # app configs
 default[:geminabox][:config_directory] = '/etc/geminabox'
 default[:geminabox][:base_directory] = '/var/www/geminabox'
 default[:geminabox][:data_directory] = 'data' # This values is joined to base_directory
+
 default[:geminabox][:build_legacy] = false
 # Proxy missing gems from rubygems
 default[:geminabox][:rubygems_proxy] = false
@@ -40,3 +55,11 @@ default[:geminabox][:nginx][:ssl_port] = 443
 default[:geminabox][:nginx][:client_max_body_size] = '5M'
 # bluepill configs
 default[:geminabox][:bluepill] = Mash.new
+default[:geminabox][:bluepill][:bin] = "#{node['languages']['ruby']['bin_dir']}/bluepill"
+default[:geminabox][:bluepill][:logfile] = "/var/log/bluepill.log"
+default[:geminabox][:bluepill][:pid_dir] = "/var/run/bluepill"
+default[:geminabox][:bluepill][:state_dir] = "/var/lib/bluepill"
+default[:geminabox][:bluepill][:init_dir] = "/etc/init.d"
+default[:geminabox][:bluepill][:conf_dir] = "/etc/bluepill"
+default[:geminabox][:bluepill][:group] = 0
+default[:geminabox][:bluepill][:use_rsyslog] = false

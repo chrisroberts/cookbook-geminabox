@@ -1,5 +1,23 @@
 include_recipe 'build-essential'
 
+node.default[:rbenv][:rubies] = ["#{node.geminabox.ruby.version}"]
+node.default[:rbenv][:global] = node[:geminabox][:ruby][:version]
+
+ruby_path = "#{node.rbenv.root_path}/versions/#{node.geminabox.ruby.version}"
+
+include_recipe 'rbenv::default'
+include_recipe 'rbenv::ruby_build'
+
+# backward compatibility, should be deprecated and removed
+unless node[:geminabox][:init].nil?
+  Chef::Log.warn <<-EOH
+node['geminbox']['init'] has been changed to node['geminbox']['monitor'] to 
+match with reality. The attribute has been converted but this warning and 
+conversion may be removed in the next major release of this cookbook.
+EOH
+  node.default[:geminabox][:monitor] = node[:geminabox][:init]    
+end
+
 # Ensure our directories exist
 directory node[:geminabox][:config_directory] do
   action :create
@@ -15,9 +33,15 @@ directory File.join(node[:geminabox][:base_directory], node[:geminabox][:data_di
   group node[:geminabox][:www_group]
 end
 
+rbenv_ruby node[:geminabox][:ruby][:version]
+
+rbenv_gem 'bundler' do
+  ruby_version node[:geminabox][:ruby][:version]
+end
+
 # Install the gem
-gem_package('geminabox') do
-  action :install
+rbenv_gem 'geminabox' do
+  ruby_version node[:geminabox][:ruby][:version]
   version node[:geminabox][:version] if node[:geminabox][:version]
 end
 
@@ -37,16 +61,6 @@ else
   raise ArgumentError.new "Unknown backend style provided: #{node[:geminabox][:backend]}"
 end
 
-# Setup the init
-case node[:geminabox][:init].to_sym
-when :bluepill
-  include_recipe 'geminabox::bluepill'
-when :runit
-  include_recipe 'geminabox::runit'
-else
-  raise ArgumentError.new "Unknown init style provided: #{node[:geminabox][:init]}"
-end
-
 # Configure geminabox
 template File.join(node[:geminabox][:base_directory], 'config.ru') do
   source 'config.ru.erb'
@@ -58,3 +72,17 @@ template File.join(node[:geminabox][:base_directory], 'config.ru') do
   mode '0644'
   notifies :restart, 'service[geminabox]'
 end
+
+# Setup the init
+include_recipe "geminabox::#{node[:geminabox][:init_type]}"
+
+# Setup process monitor
+case node[:geminabox][:monitor].to_sym
+when :bluepill
+  include_recipe 'geminabox::bluepill'
+when :supervisord
+  include_recipe 'geminabox::supervisord'
+else
+  raise ArgumentError.new "Unknown monitor option provided: #{node[:geminabox][:monitor]}"
+end
+

@@ -1,0 +1,72 @@
+#!/bin/sh
+#
+#       /etc/rc.d/init.d/geminabox
+#
+#       Daemon for geminabox
+#
+# chkconfig:   2345 95 95
+# description: Daemon for geminabox
+
+### BEGIN INIT INFO
+# Provides:       geminabox
+# Required-Start: $network cgconfig
+# Required-Stop:
+# Should-Start:
+# Should-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop:  0 1 6
+# Short-Description: start and stop geminabox
+# Description: Daemon for geminabox
+### END INIT INFO
+
+# Source function library.
+if [ -e "/etc/rc.d/init.d/functions" ]; then
+    . /etc/rc.d/init.d/functions
+elif [ -e "/lib/lsb/init-functions" ]; then
+    . /lib/lsb/init-functions
+fi
+
+prog="geminabox"
+
+[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
+
+DAEMON=<%= @exec %>
+DAEMON_OPTS="-c <%= @config %> -D"
+NAME=geminabox
+DESC="Geminabox app"
+<% if @pid -%>
+PID="<%= @pid %>"
+<% else -%>
+PID="/var/run/$prog.pid"
+<% end -%>
+
+case "$1" in
+  start)
+    echo -n "Starting $DESC: "
+    $DAEMON $DAEMON_OPTS
+    echo "$NAME."
+    ;;
+  stop)
+    echo -n "Stopping $DESC: "
+        kill -QUIT `cat $PID`
+    echo "$NAME."
+    ;;
+  restart)
+    echo -n "Restarting $DESC: "
+        kill -QUIT `cat $PID`
+    sleep 1
+    $DAEMON $DAEMON_OPTS
+    echo "$NAME."
+    ;;
+  reload)
+        echo -n "Reloading $DESC configuration: "
+        kill -HUP `cat $PID`
+        echo "$NAME."
+        ;;
+  *)
+    echo "Usage: $NAME {start|stop|restart|reload}" >&2
+    exit 1
+    ;;
+esac
+
+exit 0

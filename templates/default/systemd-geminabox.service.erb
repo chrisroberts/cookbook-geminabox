@@ -1,0 +1,15 @@
+[Unit]
+Description=Geminabox Application
+Documentation=http://docs.geminabox.com
+After=network.target
+Requires=
+
+[Service]
+Type=notify
+<% if @tmpdir -%>
+Environment="TMPDIR=<%= @tmpdir %>"
+<% end -%>
+ExecStart=<%= Docker::Helpers.executable(node) %> -d<%= @daemon_options %>
+
+[Install]
+Also=geminabox.socket

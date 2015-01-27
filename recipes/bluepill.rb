@@ -1,10 +1,40 @@
-include_recipe "bluepill"
-
-gem_package('red_unicorn') do
+rbenv_gem "i18n" do
+  ruby_version node[:geminabox][:ruby][:version]
   action :install
 end
 
-template '/etc/init/geminabox.conf' do
+rbenv_gem "bluepill" do
+  ruby_version node[:geminabox][:ruby][:version]
+  version node[:geminabox][:bluepill][:version] if node[:geminabox][:bluepill][:version]
+  action :install
+end
+
+[ 
+  node[:geminabox][:bluepill][:conf_dir], 
+  node[:geminabox][:bluepill][:pid_dir], 
+  node[:geminabox][:bluepill][:state_dir]
+].each do |dir|
+  directory dir do
+    recursive true
+    owner "root"
+    group node[:geminabox][:bluepill][:group]
+  end
+end
+
+#file "#{node['geminabox']['bluepill']['logfile']}" do
+file node[:geminabox][:bluepill][:logfile] do
+  owner "root"
+  group node[:geminabox][:bluepill][:group]
+  mode "0755"
+  action :create_if_missing
+end
+
+rbenv_gem 'red_unicorn' do
+  ruby_version node[:geminabox][:ruby][:version]
+  action :install
+end
+
+template '/etc/init/gembox-bluepill.conf' do
   source 'upstart-geminabox-bluepill.erb'
   variables(
     :www_user => node[:geminabox][:www_user],
@@ -29,8 +59,4 @@ template '/etc/bluepill/geminabox.pill' do
   notifies :restart, 'service[geminabox]'
 end
 
-service 'geminabox' do
-  provider Chef::Provider::Service::Upstart
-  supports :status => true, :restart => true, :reload => true
-  action [:enable, :start]
-end
+

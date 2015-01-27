@@ -1,6 +1,7 @@
-if(node[:geminabox][:unicorn][:install])
-  gem_package 'unicorn' do
-    action :install
+# Install the gem
+if(node[:geminabox][:unicorn][:install]) 
+    rbenv_gem 'unicorn' do
+    ruby_version node[:geminabox][:ruby][:version]
     version node[:geminabox][:unicorn][:version] || '> 0'
   end
 end

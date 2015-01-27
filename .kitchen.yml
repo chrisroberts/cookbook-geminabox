@@ -6,13 +6,16 @@ provisioner:
   name: chef_solo
 
 platforms:
-  - name: ubuntu-12.04
+  - name: ubuntu-14.04
   - name: centos-6.5
+  - name: debian-7.4
 
 suites:
   - name: default
     run_list: ['recipe[apt]', 'recipe[geminabox]']
     attributes:
+      apt:
+        compile_time_update: true
       geminabox:
         ssl:
           enabled: true

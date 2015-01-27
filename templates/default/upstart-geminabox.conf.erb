@@ -1,0 +1,14 @@
+description "Geminabox process"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+expect daemon
+respawn
+respawn limit 5 30
+
+env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/chef/embedded/bin
+env RAILS_ENV=production
+
+pre-start exec <%= @exec %>-D -c <%= @config %> --env production --pid-file=<%= @pid %>
+post-stop exec kill `cat <%= @pid %>`

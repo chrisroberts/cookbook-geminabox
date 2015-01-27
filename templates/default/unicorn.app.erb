@@ -1,10 +1,16 @@
 # Automated chef configuration file
 worker_processes <%= @workers %>
-working_directory "<%= @base_path %>"
-listen "<%= @socket %>"
+working_directory "<%= @working_directory %>"
+# Listen on a Unix data socket 
+user '<%= @owner %>', '<%= @group %>'
+listen "<%= @socket %>", :backlog => 2048
+# Restart any workers that haven't responded in @timeout seconds
 timeout <%= @timeout %>
-pid "<%= File.join(@base_path, 'unicorn.pid') %>"
-preload_app true
+pid "<%= File.join(@working_directory, 'unicorn.pid') %>"
+preload_app <%= @preload_app %>
+
+stderr_path "/var/log/geminabox/unicorn_site.stderr.log" 
+stdout_path "/var/log/geminabox/unicorn_site.stdout.log"
 
 if(GC.respond_to?(:copy_on_write_friendly=))
   GC.copy_on_write_friendly = <%= @cow_friendly %>
@@ -13,7 +19,7 @@ end
 after_fork do |one,two|
   if(Process.euid == 0)
     require 'fileutils'
-    worker.user('<%= @www_user %>', '<%= @www_user %>')
-    FileUtils.chown('<%= @www_user %>', '<%= @www_user %>', '<%= @socket %>')
+    worker.user('<%= @owner %>', '<%= @group %>')
+    FileUtils.chown('<%= @owner %>', '<%= @group %>', '<%= @socket %>')
   end
 end

@@ -11,10 +11,16 @@ server {
   proxy_set_header Host $http_host;
   location / {
     proxy_pass http://unicorn;
+    <% if @limit_post and @auth_file %>
+    limit_except GET HEAD {
+      auth_basic "Restricted access";
+      auth_basic_user_file <%= @auth_file %>;
+    }
+    <% end %>
   }
   <% end %>
   root <%= @root %>;
-  <% if @auth_file %>
+  <% if @auth_file and not @limit_post %>
   auth_basic "Restricted Access";
   auth_basic_user_file <%= @auth_file %>;
   <% end %>
@@ -31,12 +37,18 @@ server {
   ssl_ciphers HIGH;
   ssl_protocols SSLv3 TLSv1;
   ssl_prefer_server_ciphers on;
-  <% if @auth_file %>
+  <% if @auth_file and not @limit_post %>
   auth_basic "Restricted Access";
   auth_basic_user_file <%= @auth_file %>;
   <% end %>
   client_max_body_size <%= node[:geminabox][:nginx][:client_max_body_size] %>;
   location / {
+    <% if @limit_post and @auth_file %>
+    limit_except GET HEAD {
+      auth_basic "Restricted access";
+      auth_basic_user_file <%= @auth_file %>;
+    }
+    <% end %>
     proxy_set_header Host $http_host;
     proxy_set_header X-Forwarded-Proto https;
     proxy_pass http://unicorn;

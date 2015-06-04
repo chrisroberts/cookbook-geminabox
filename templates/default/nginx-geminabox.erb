@@ -16,6 +16,11 @@ server {
       auth_basic "Restricted access";
       auth_basic_user_file <%= @auth_file %>;
     }
+    <% elsif @limit_post and @network_list %>
+    limit_except GET HEAD {
+      allow <%= @network_list %>;
+      deny all;
+    }
     <% end %>
   }
   <% end %>
@@ -47,6 +52,11 @@ server {
     limit_except GET HEAD {
       auth_basic "Restricted access";
       auth_basic_user_file <%= @auth_file %>;
+    }
+    <% elsif @limit_post and @network_list %>
+    limit_except GET HEAD {
+      allow <%= @network_list %>;
+      deny all;
     }
     <% end %>
     proxy_set_header Host $http_host;

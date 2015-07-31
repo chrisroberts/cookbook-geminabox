@@ -30,7 +30,7 @@ end
 if(node[:geminabox][:auth_required])
   if(node[:geminabox][:auth_required].is_a?(String))
     if(File.exists?(node[:geminabox][:auth_required]))
-      htpasswd_file = node[:geminabox][:auth_required]
+      geminabox_auth = node[:geminabox][:auth_required]
     else
       file File.join(node[:nginx][:dir], 'geminabox.htpasswd') do
         content node[:geminabox][:auth_required]
@@ -69,7 +69,9 @@ template File.join('/', 'etc', 'nginx', 'sites-available', 'geminabox') do
     :ssl => node[:geminabox][:ssl][:enabled],
     :ssl_cert => node[:geminabox][:ssl][:cert_file],
     :ssl_key => node[:geminabox][:ssl][:key_file],
-    :auth_file => geminabox_auth
+    :auth_file => geminabox_auth,
+    :limit_post => node[:geminabox][:limit_post],
+    :network_list => node[:geminabox][:network_list]
   )
   mode '0644'
   notifies :restart, 'service[nginx]'

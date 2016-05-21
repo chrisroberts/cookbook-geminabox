@@ -6,8 +6,8 @@ provisioner:
   name: chef_zero
 
 platforms:
+  - name: ubuntu-12.04
   - name: centos-6.7
-  - name: centos-7.2
 
 suites:
   - name: default

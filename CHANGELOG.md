@@ -1,3 +1,8 @@
+## v0.3.0
+* use berkshelf for cookbook dependancy resolution
+* pin nginx cookbook to <= 2.7.5
+* add rakefile and rubocop.yml 
+
 ## v0.2.0
 * SSL support updates
 * Remove default version restriction

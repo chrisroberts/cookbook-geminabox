@@ -14,11 +14,11 @@ default[:geminabox][:rubygems_proxy] = false
 # auth configs
 default[:geminabox][:auth_required] = false
 # sys configs
-if ['rhel', 'fedora'].include? node[:platform_family]
-  default[:geminabox][:www_user] = 'nginx'
-else
-  default[:geminabox][:www_user] = 'www-data'
-end
+default[:geminabox][:www_user] = if ['rhel', 'fedora'].include? node[:platform_family]
+                                   'nginx'
+                                 else
+                                   'www-data'
+                                 end
 # ssl configs
 default[:geminabox][:ssl][:enabled] = false
 # unicorn configs

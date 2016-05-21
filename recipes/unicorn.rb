@@ -1,4 +1,4 @@
-if(node[:geminabox][:unicorn][:install])
+if node[:geminabox][:unicorn][:install]
   gem_package 'unicorn' do
     action :install
     version node[:geminabox][:unicorn][:version] || '> 0'
@@ -23,4 +23,3 @@ unicorn_config File.join(node[:geminabox][:config_directory], 'geminabox.unicorn
   mode '0644'
   notifies :restart, 'service[geminabox]'
 end
-

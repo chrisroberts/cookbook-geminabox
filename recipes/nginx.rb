@@ -6,11 +6,11 @@ include_recipe 'nginx'
   end
 end
 
-if(node[:geminabox][:ssl][:enabled])
-  if(node[:geminabox][:ssl][:key].nil?)
-    cert = ssl_certificate "geminabox" do
-      namespace "geminabox"
-      notifies :restart, "service[nginx]"
+if node[:geminabox][:ssl][:enabled]
+  if node[:geminabox][:ssl][:key].nil?
+    cert = ssl_certificate 'geminabox' do
+      namespace 'geminabox'
+      notifies :restart, 'service[nginx]'
     end
     geminabox_key = cert.key_content
     geminabox_cert = cert.cert_content
@@ -19,7 +19,7 @@ if(node[:geminabox][:ssl][:enabled])
     geminabox_cert = node[:geminabox][:ssl][:cert]
   end
 
-  {:key => geminabox_key, :cert => geminabox_cert}.each_pair do |key,val|
+  { :key => geminabox_key, :cert => geminabox_cert }.each_pair do |key, val|
     file File.join(node[:nginx][:dir], "geminabox.ssl.#{key}") do
       content val
     end
@@ -27,9 +27,9 @@ if(node[:geminabox][:ssl][:enabled])
   end
 end
 
-if(node[:geminabox][:auth_required])
-  if(node[:geminabox][:auth_required].is_a?(String))
-    if(File.exists?(node[:geminabox][:auth_required]))
+if node[:geminabox][:auth_required]
+  if node[:geminabox][:auth_required].is_a?(String)
+    if File.exist?(node[:geminabox][:auth_required])
       htpasswd_file = node[:geminabox][:auth_required]
     else
       file File.join(node[:nginx][:dir], 'geminabox.htpasswd') do
@@ -37,7 +37,7 @@ if(node[:geminabox][:auth_required])
       end
       geminabox_auth = File.join(node[:nginx][:dir], 'geminabox.htpasswd')
     end
-  elsif(node[:geminabox][:auth_required].is_a?(Hash)) # generate file
+  elsif node[:geminabox][:auth_required].is_a?(Hash) # generate file
     require 'webrick/httpauth'
     require 'tempfile'
     tmp = Tempfile.new('geminabox')
@@ -57,7 +57,7 @@ if(node[:geminabox][:auth_required])
       tmp.unlink
     end
   else
-    raise "Unknown authentication setting provided for geminabox configuration"
+    raise 'Unknown authentication setting provided for geminabox configuration'
   end
 end
 

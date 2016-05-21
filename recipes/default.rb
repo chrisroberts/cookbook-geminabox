@@ -7,14 +7,6 @@ directory node[:geminabox][:config_directory] do
   mode '0755'
 end
 
-directory File.join(node[:geminabox][:base_directory], node[:geminabox][:data_directory]) do
-  action :create
-  recursive true
-  mode '0755'
-  owner node[:geminabox][:www_user]
-  group node[:geminabox][:www_group]
-end
-
 # Install the gem
 gem_package('geminabox') do
   action :install
@@ -27,6 +19,14 @@ when :nginx
   include_recipe 'geminabox::nginx'
 else
   raise ArgumentError.new "Unknown frontend style provided: #{node[:geminabox][:frontend]}"
+end
+
+directory File.join(node[:geminabox][:base_directory], node[:geminabox][:data_directory]) do
+  action :create
+  recursive true
+  mode '0755'
+  owner node[:geminabox][:www_user]
+  group node[:geminabox][:www_group]
 end
 
 # Setup the backend

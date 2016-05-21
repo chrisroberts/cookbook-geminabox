@@ -1,4 +1,4 @@
-include_recipe "bluepill"
+include_recipe 'bluepill'
 
 gem_package('red_unicorn') do
   action :install

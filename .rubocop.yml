@@ -1,0 +1,14 @@
+AllCops:
+  Include:
+    - Berksfile
+    - Gemfile
+    - Rakefile
+    - Thorfile
+    - Guardfile
+  Exclude:
+    - vendor/**/*
+
+LineLength:
+  Enabled: false
+Style/RaiseArgs:
+  EnforcedStyle: compact

@@ -1,3 +1,11 @@
+## v0.3.0
+* use berkshelf for cookbook dependency resolution
+* pin nginx cookbook to <= 2.7.5
+* add rakefile and rubocop.yml
+* update kitchen to use centos 6.7
+* fix cops
+* set ssl_protocol default to TLSv1
+
 ## v0.2.0
 * SSL support updates
 * Remove default version restriction
